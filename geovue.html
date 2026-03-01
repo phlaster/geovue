@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoCSV Explorer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg: #0d0d12;
+            --bg-elevated: #14141b;
+            --bg-card: #1a1a24;
+            --fg: #e8e8ed;
+            --fg-muted: #6b6b7b;
+            --accent: #00d4aa;
+            --accent-dim: #00d4aa33;
+            --danger: #ff4757;
+            --border: #2a2a3a;
+            --warning: #ffa502;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+            background: var(--bg);
+        }
+
+        .leaflet-container {
+            background: var(--bg) !important;
+        }
+
+        .leaflet-tile-pane {
+            filter: brightness(0.7) saturate(0.8) hue-rotate(180deg) invert(1);
+        }
+
+        .leaflet-control-zoom a {
+            background: var(--bg-card) !important;
+            color: var(--fg) !important;
+            border-color: var(--border) !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: var(--bg-elevated) !important;
+            color: var(--accent) !important;
+        }
+
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            z-index: 1000;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .panel-subtitle {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .panel-content {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-elevated);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-dim), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .file-upload:hover::before,
+        .file-upload.dragover::before {
+            opacity: 1;
+        }
+
+        .file-upload:hover,
+        .file-upload.dragover {
+            border-color: var(--accent);
+        }
+
+        .file-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            color: var(--fg-muted);
+            transition: color 0.3s ease;
+        }
+
+        .file-upload:hover .upload-icon {
+            color: var(--accent);
+        }
+
+        .upload-text {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .upload-hint {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+        }
+
+        .file-loaded {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-dim);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .file-details h4 {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .file-details span {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--fg-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .groupings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .grouping-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grouping-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: var(--bg-card);
+        }
+
+        .grouping-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grouping-type {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .grouping-type.numeric {
+            background: rgba(255, 165, 2, 0.2);
+            color: var(--warning);
+        }
+
+        .grouping-type.factor {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        .grouping-column {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: var(--fg-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .add-grouping-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px dashed var(--border);
+            background: transparent;
+            color: var(--fg-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .add-grouping-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .add-grouping-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .column-selector {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            z-index: 2000;
+            min-width: 300px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1999;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-title {
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+
+        .column-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .column-option {
+            padding: 12px 14px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .column-option:hover {
+            border-color: var(--accent);
+            background: var(--bg-card);
+        }
+
+        .column-option.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .column-name {
+            font-weight: 500;
+        }
+
+        .column-type {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--border);
+            color: var(--fg-muted);
+        }
+
+        .tooltip {
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            z-index: 3000;
+            pointer-events: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            max-width: 280px;
+            animation: tooltipIn 0.15s ease;
+        }
+
+        @keyframes tooltipIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 4px 0;
+            font-size: 0.85rem;
+        }
+
+        .tooltip-key {
+            color: var(--fg-muted);
+        }
+
+        .tooltip-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            z-index: 1000;
+            min-width: 180px;
+        }
+
+        .legend-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--fg-muted);
+            margin-bottom: 12px;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .legend-marker {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .size-scale {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .size-circle {
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .size-label {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                width: calc(100% - 40px);
+                max-height: 50vh;
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .legend {
+                bottom: auto;
+                top: 20px;
+                left: 20px;
+                right: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="control-panel">
+        <div class="panel-header">
+            <div class="panel-title">GeoCSV Explorer</div>
+            <div class="panel-subtitle">Visualize your spatial data</div>
+        </div>
+        <div class="panel-content">
+            <div id="fileSection">
+                <div class="file-upload" id="dropZone">
+                    <input type="file" accept=".csv" id="fileInput">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    <div class="upload-text">Drop CSV file here</div>
+                    <div class="upload-hint">or click to browse</div>
+                </div>
+            </div>
+
+            <div id="loadedSection" class="hidden">
+                <div class="file-loaded">
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                            </svg>
+                        </div>
+                        <div class="file-details">
+                            <h4 id="fileName">data.csv</h4>
+                            <span id="fileStats">0 rows loaded</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Groupings</div>
+                <div class="groupings-list" id="groupingsList"></div>
+                <button class="add-grouping-btn" id="addGroupingBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add grouping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend hidden" id="legend">
+        <div class="legend-title">Legend</div>
+        <div class="legend-items" id="legendItems"></div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modalOverlay"></div>
+    <div class="column-selector hidden" id="columnSelector">
+        <div class="modal-title">Select column</div>
+        <div class="column-options" id="columnOptions"></div>
+    </div>
+
+    <div class="tooltip hidden" id="tooltip"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map', {
+            center: [20, 0],
+            zoom: 2,
+            minZoom: 2,
+            maxZoom: 18,
+            worldCopyJump: true
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap, &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        // State
+        let csvData = [];
+        let columns = [];
+        let groupings = []; 
+        let markersLayer = null;
+
+        // Colors for factors
+        const factorColors = [
+            '#00d4aa', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3',
+            '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a8b',
+            '#88d8b0', '#ffcc5c', '#ff6f69', '#96ceb4', '#ffeead'
+        ];
+
+        // Shapes for factors (Updated Order)
+        // 1. Circle, 2. Star, 3. Square, 4. Triangle, 5. Diamond, 6. Hexagon
+        const shapes = ['circle', 'star', 'square', 'triangle', 'diamond', 'hexagon'];
+
+        // DOM elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileSection = document.getElementById('fileSection');
+        const loadedSection = document.getElementById('loadedSection');
+        const fileName = document.getElementById('fileName');
+        const fileStats = document.getElementById('fileStats');
+        const groupingsList = document.getElementById('groupingsList');
+        const addGroupingBtn = document.getElementById('addGroupingBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const columnSelector = document.getElementById('columnSelector');
+        const columnOptions = document.getElementById('columnOptions');
+        const tooltip = document.getElementById('tooltip');
+        const legend = document.getElementById('legend');
+        const legendItems = document.getElementById('legendItems');
+
+        // Parse CSV
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return { headers: [], data: [] };
+
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length === headers.length) {
+                    const row = {};
+                    headers.forEach((h, idx) => {
+                        row[h] = values[idx].trim().replace(/^["']|["']$/g, '');
+                    });
+                    data.push(row);
+                }
+            }
+
+            return { headers, data };
+        }
+
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let char of line) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            values.push(current);
+            return values;
+        }
+
+        // Check if value is numeric
+        function isNumeric(value) {
+            if (value === null || value === undefined || value === '') return false;
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        // Check if column is numeric
+        function isColumnNumeric(data, column) {
+            const numericCount = data.filter(row => isNumeric(row[column])).length;
+            return numericCount > data.length * 0.5;
+        }
+
+        // File handling
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                alert('Please select a CSV file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const result = parseCSV(e.target.result);
+                columns = result.headers;
+                csvData = result.data;
+
+                if (!columns.includes('lat') || !columns.includes('lon')) {
+                    alert('CSV must contain "lat" and "lon" columns');
+                    return;
+                }
+
+                fileName.textContent = file.name;
+                fileStats.textContent = `${csvData.length} rows, ${columns.length} columns`;
+
+                fileSection.classList.add('hidden');
+                loadedSection.classList.remove('hidden');
+
+                groupings = [];
+                renderGroupings();
+                renderMarkers();
+                updateLegend();
+            };
+            reader.readAsText(file);
+        }
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Helpers to determine roles
+        function getGroupingRoles() {
+            const factorGroupings = groupings.filter(g => g.type === 'factor');
+            const numericGroupings = groupings.filter(g => g.type === 'numeric');
+
+            return {
+                colorGrouping: factorGroupings[0] || null, // 1st Factor -> Color
+                shapeGrouping: factorGroupings[1] || null, // 2nd Factor -> Shape
+                sizeGrouping: numericGroupings[0] || null  // 1st Numeric -> Size
+            };
+        }
+
+        // Grouping management
+        function renderGroupings() {
+            groupingsList.innerHTML = '';
+            
+            groupings.forEach((g, index) => {
+                const item = document.createElement('div');
+                item.className = 'grouping-item';
+                
+                // Determine role text based on type and order
+                let roleText = '';
+                if (g.type === 'numeric') {
+                    roleText = 'Size';
+                } else {
+                    // Factor: check if it's the first or second factor
+                    const factors = groupings.filter(grp => grp.type === 'factor');
+                    const factorIndex = factors.findIndex(grp => grp.column === g.column);
+                    roleText = factorIndex === 0 ? 'Color' : 'Shape';
+                }
+                
+                item.innerHTML = `
+                    <div class="grouping-header">
+                        <div class="grouping-label">
+                            <span class="grouping-type ${g.type}">${roleText}</span>
+                            <span class="grouping-column">${g.column}</span>
+                        </div>
+                        <button class="delete-btn" data-index="${index}" aria-label="Delete grouping">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                groupingsList.appendChild(item);
+            });
+
+            updateAddButton();
+        }
+
+        function updateAddButton() {
+            const factorCount = groupings.filter(g => g.type === 'factor').length;
+            const numericCount = groupings.filter(g => g.type === 'numeric').length;
+            
+            // Max 2 factors AND 1 numeric
+            const maxReached = (factorCount >= 2 && numericCount >= 1);
+            addGroupingBtn.disabled = maxReached || !csvData.length;
+        }
+
+        addGroupingBtn.addEventListener('click', () => {
+            showColumnSelector();
+        });
+
+        function showColumnSelector() {
+            const nonCoordCols = columns.filter(c => c !== 'lat' && c !== 'lon');
+            const usedCols = groupings.map(g => g.column);
+            
+            const factorCount = groupings.filter(g => g.type === 'factor').length;
+            const numericCount = groupings.filter(g => g.type === 'numeric').length;
+
+            columnOptions.innerHTML = '';
+            
+            nonCoordCols.forEach(col => {
+                const isUsed = usedCols.includes(col);
+                const isNum = isColumnNumeric(csvData, col);
+                
+                // Disable checks
+                // 1. If already used
+                // 2. If factor and we already have 2 factors
+                // 3. If numeric and we already have 1 numeric
+                let disabled = isUsed;
+                
+                if (!isNum && factorCount >= 2) disabled = true; // Max factors reached
+                if (isNum && numericCount >= 1) disabled = true; // Max numerics reached
+
+                const option = document.createElement('div');
+                option.className = `column-option ${disabled ? 'disabled' : ''}`;
+                option.innerHTML = `
+                    <span class="column-name">${col}</span>
+                    <span class="column-type">${isNum ? 'numeric' : 'factor'}</span>
+                `;
+
+                if (!disabled) {
+                    option.addEventListener('click', () => {
+                        addGrouping(col, isNum ? 'numeric' : 'factor');
+                        hideColumnSelector();
+                    });
+                }
+
+                columnOptions.appendChild(option);
+            });
+
+            modalOverlay.classList.remove('hidden');
+            columnSelector.classList.remove('hidden');
+        }
+
+        function hideColumnSelector() {
+            modalOverlay.classList.add('hidden');
+            columnSelector.classList.add('hidden');
+        }
+
+        modalOverlay.addEventListener('click', hideColumnSelector);
+
+        function addGrouping(column, type) {
+            groupings.push({ column, type });
+            renderGroupings();
+            renderMarkers();
+            updateLegend();
+        }
+
+        groupingsList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.delete-btn');
+            if (btn) {
+                const index = parseInt(btn.dataset.index);
+                groupings.splice(index, 1);
+                renderGroupings();
+                renderMarkers();
+                updateLegend();
+            }
+        });
+
+        // Marker rendering
+        function renderMarkers() {
+            if (markersLayer) {
+                map.removeLayer(markersLayer);
+            }
+
+            if (!csvData.length) return;
+
+            const roles = getGroupingRoles();
+            
+            // Prepare Maps
+            const colorMap = new Map();
+            const shapeMap = new Map();
+            let sizeRange = { min: Infinity, max: -Infinity };
+
+            // Map Colors (1st Factor)
+            if (roles.colorGrouping) {
+                const col = roles.colorGrouping.column;
+                const uniqueVals = [...new Set(csvData.map(row => row[col]))];
+                uniqueVals.forEach((val, idx) => {
+                    colorMap.set(val, factorColors[idx % factorColors.length]);
+                });
+            }
+
+            // Map Shapes (2nd Factor)
+            if (roles.shapeGrouping) {
+                const col = roles.shapeGrouping.column;
+                const uniqueVals = [...new Set(csvData.map(row => row[col]))];
+                uniqueVals.forEach((val, idx) => {
+                    shapeMap.set(val, shapes[idx % shapes.length]);
+                });
+            }
+
+            // Calc Size Range (Numeric)
+            if (roles.sizeGrouping) {
+                const col = roles.sizeGrouping.column;
+                csvData.forEach(row => {
+                    const val = parseFloat(row[col]);
+                    if (!isNaN(val)) {
+                        sizeRange.min = Math.min(sizeRange.min, val);
+                        sizeRange.max = Math.max(sizeRange.max, val);
+                    }
+                });
+            }
+
+            markersLayer = L.layerGroup().addTo(map);
+
+            csvData.forEach((row) => {
+                const lat = parseFloat(row.lat);
+                const lon = parseFloat(row.lon);
+                
+                if (isNaN(lat) || isNaN(lon)) return;
+
+                // Defaults
+                let color = 'rgba(255, 255, 255, 0.9)';
+                let shape = 'circle';
+                let size = 10;
+
+                // Apply Color
+                if (roles.colorGrouping) {
+                    const val = row[roles.colorGrouping.column];
+                    if (colorMap.has(val)) color = colorMap.get(val);
+                }
+
+                // Apply Shape
+                if (roles.shapeGrouping) {
+                    const val = row[roles.shapeGrouping.column];
+                    if (shapeMap.has(val)) shape = shapeMap.get(val);
+                }
+
+                // Apply Size
+                if (roles.sizeGrouping) {
+                    const val = parseFloat(row[roles.sizeGrouping.column]);
+                    if (!isNaN(val) && sizeRange.max > sizeRange.min) {
+                        const normalized = (val - sizeRange.min) / (sizeRange.max - sizeRange.min);
+                        size = 6 + normalized * 20;
+                    }
+                }
+
+                const marker = createMarker(lat, lon, color, shape, size, row);
+                marker.addTo(markersLayer);
+            });
+
+            // Fit bounds
+            if (csvData.length > 0) {
+                const bounds = L.latLngBounds(csvData
+                    .filter(row => !isNaN(parseFloat(row.lat)) && !isNaN(parseFloat(row.lon)))
+                    .map(row => [parseFloat(row.lat), parseFloat(row.lon)])
+                );
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
+                }
+            }
+        }
+
+        function createMarker(lat, lon, color, shape, size, data) {
+            size = Math.max(4, Math.min(30, size));
+            
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: createMarkerSVG(color, shape, size),
+                iconSize: [size * 2, size * 2],
+                iconAnchor: [size, size]
+            });
+
+            const marker = L.marker([lat, lon], { icon });
+
+            marker.on('mouseover', (e) => showTooltip(e, data));
+            marker.on('mouseout', hideTooltip);
+
+            return marker;
+        }
+
+        function createMarkerSVG(color, shape, size) {
+            const s = size * 2;
+            const c = size;
+            const r = Math.max(2, size - 2);
+
+            switch (shape) {
+                case 'circle':
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
+                    </svg>`;
+                case 'star': // 5-point star
+                    const points = [];
+                    for (let i = 0; i < 10; i++) {
+                        const radius = i % 2 === 0 ? r : r * 0.5;
+                        const angle = (i * 36 - 90) * Math.PI / 180;
+                        points.push(`${c + radius * Math.cos(angle)},${c + radius * Math.sin(angle)}`);
+                    }
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <polygon points="${points.join(' ')}" fill="${color}" stroke="${color}" stroke-width="1" opacity="0.9"/>
+                    </svg>`;
+                case 'square':
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9" transform="rotate(45 ${c} ${c})"/>
+                    </svg>`;
+                case 'triangle':
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <polygon points="${c},${c-r} ${c+r},${c+r} ${c-r},${c+r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
+                    </svg>`;
+                case 'diamond':
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
+                    </svg>`;
+                case 'hexagon':
+                    const hexPoints = [];
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * 60 - 30) * Math.PI / 180;
+                        hexPoints.push(`${c + r * Math.cos(angle)},${c + r * Math.sin(angle)}`);
+                    }
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <polygon points="${hexPoints.join(' ')}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
+                    </svg>`;
+                default:
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+                        <circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
+                    </svg>`;
+            }
+        }
+
+        // Tooltip
+        function showTooltip(e, data) {
+            let html = '';
+            Object.entries(data).forEach(([key, value]) => {
+                html += `
+                    <div class="tooltip-row">
+                        <span class="tooltip-key mono">${key}</span>
+                        <span class="tooltip-value">${value}</span>
+                    </div>
+                `;
+            });
+            
+            tooltip.innerHTML = html;
+            tooltip.classList.remove('hidden');
+
+            const point = e.containerPoint;
+            const mapContainer = document.getElementById('map');
+            const rect = mapContainer.getBoundingClientRect();
+
+            let left = rect.left + point.x + 15;
+            let top = rect.top + point.y - 10;
+
+            const tooltipRect = tooltip.getBoundingClientRect();
+            if (left + tooltipRect.width > window.innerWidth - 20) {
+                left = rect.left + point.x - tooltipRect.width - 15;
+            }
+            if (top + tooltipRect.height > window.innerHeight - 20) {
+                top = window.innerHeight - tooltipRect.height - 20;
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+
+        function hideTooltip() {
+            tooltip.classList.add('hidden');
+        }
+
+        // Legend
+        function updateLegend() {
+            if (!csvData.length || !groupings.length) {
+                legend.classList.add('hidden');
+                return;
+            }
+
+            legend.classList.remove('hidden');
+            let html = '';
+            
+            const roles = getGroupingRoles();
+
+            // Color Legend
+            if (roles.colorGrouping) {
+                const g = roles.colorGrouping;
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                
+                const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
+                uniqueVals.slice(0, 8).forEach((val, idx) => {
+                    const color = factorColors[idx % factorColors.length];
+                    html += `
+                        <div class="legend-item">
+                            <div class="legend-marker" style="background:${color}; width:12px; height:12px; border-radius:50%;"></div>
+                            <span>${val}</span>
+                        </div>
+                    `;
+                });
+                if (uniqueVals.length > 8) {
+                    html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 8} more</div>`;
+                }
+            }
+
+            // Shape Legend
+            if (roles.shapeGrouping) {
+                const g = roles.shapeGrouping;
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                
+                const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
+                uniqueVals.slice(0, 6).forEach((val, idx) => {
+                    const shape = shapes[idx % shapes.length];
+                    // White shapes
+                    const svgStr = createMarkerSVG('rgba(255,255,255,0.9)', shape, 8);
+                    html += `
+                        <div class="legend-item">
+                            <div style="width:16px; height:16px; display:flex; align-items:center; justify-content:center;">
+                                ${svgStr}
+                            </div>
+                            <span>${val}</span>
+                        </div>
+                    `;
+                });
+                // Added "+ X more" for shapes
+                if (uniqueVals.length > 6) {
+                    html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 6} more</div>`;
+                }
+            }
+
+            // Size Legend
+            if (roles.sizeGrouping) {
+                const g = roles.sizeGrouping;
+                const min = sizeRangeForColumn(g.column).min;
+                const max = sizeRangeForColumn(g.column).max;
+                
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                html += `
+                    <div class="size-scale">
+                        <div class="size-circle" style="width:8px;height:8px;"></div>
+                        <span class="size-label">${min.toFixed(1)}</span>
+                        <div style="flex:1;height:1px;background:var(--border);"></div>
+                        <span class="size-label">${max.toFixed(1)}</span>
+                        <div class="size-circle" style="width:20px;height:20px;"></div>
+                    </div>
+                `;
+            }
+
+            legendItems.innerHTML = html;
+        }
+
+        function sizeRangeForColumn(column) {
+            let min = Infinity, max = -Infinity;
+            csvData.forEach(row => {
+                const val = parseFloat(row[column]);
+                if (!isNaN(val)) {
+                    min = Math.min(min, val);
+                    max = Math.max(max, val);
+                }
+            });
+            return { min: min === Infinity ? 0 : min, max: max === -Infinity ? 1 : max };
+        }
+    </script>
+</body>
+</html>
