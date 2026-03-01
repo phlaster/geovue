@@ -1,4 +1,4 @@
-# GeoCSV Explorer
+# geovue
 
 A single-page web application for visualizing geospatial CSV data on an interactive world map. Built with vanilla JS, Leaflet, and Tailwind CSS.
 
@@ -63,4 +63,4 @@ You can add up to **3 groupings** total to visualize different dimensions of you
 - **Fonts**: Google Fonts (Space Grotesk, IBM Plex Mono)
 - **Architecture**: Single-file HTML/JS application (no build step required).
 
-> This progect is made with assistance of GLM-5 by [Z.ai](https://chat.z.ai)
+> This project is made with assistance of GLM-5 by [Z.ai](https://chat.z.ai)
