@@ -21,11 +21,7 @@
             --warning: #ffa502;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Space Grotesk', sans-serif;
@@ -35,30 +31,17 @@
             overflow: hidden;
         }
 
-        .mono {
-            font-family: 'IBM Plex Mono', monospace;
-        }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
 
-        #map {
-            height: 100vh;
-            width: 100%;
-            background: var(--bg);
-        }
+        #map { height: 100vh; width: 100%; background: var(--bg); }
 
-        .leaflet-container {
-            background: var(--bg) !important;
-        }
-
-        .leaflet-tile-pane {
-            filter: brightness(0.7) saturate(0.8) hue-rotate(180deg) invert(1);
-        }
-
+        .leaflet-container { background: var(--bg) !important; }
+        .leaflet-tile-pane { filter: brightness(0.7) saturate(0.8) hue-rotate(180deg) invert(1); }
         .leaflet-control-zoom a {
             background: var(--bg-card) !important;
             color: var(--fg) !important;
             border-color: var(--border) !important;
         }
-
         .leaflet-control-zoom a:hover {
             background: var(--bg-elevated) !important;
             color: var(--accent) !important;
@@ -127,22 +110,9 @@
             transition: opacity 0.3s ease;
         }
 
-        .file-upload:hover::before,
-        .file-upload.dragover::before {
-            opacity: 1;
-        }
-
-        .file-upload:hover,
-        .file-upload.dragover {
-            border-color: var(--accent);
-        }
-
-        .file-upload input {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
+        .file-upload:hover::before, .file-upload.dragover::before { opacity: 1; }
+        .file-upload:hover, .file-upload.dragover { border-color: var(--accent); }
+        .file-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
         .upload-icon {
             width: 48px;
@@ -152,19 +122,9 @@
             transition: color 0.3s ease;
         }
 
-        .file-upload:hover .upload-icon {
-            color: var(--accent);
-        }
-
-        .upload-text {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .upload-hint {
-            font-size: 0.75rem;
-            color: var(--fg-muted);
-        }
+        .file-upload:hover .upload-icon { color: var(--accent); }
+        .upload-text { font-weight: 500; margin-bottom: 4px; }
+        .upload-hint { font-size: 0.75rem; color: var(--fg-muted); }
 
         .file-loaded {
             background: var(--bg-elevated);
@@ -189,16 +149,42 @@
             align-items: center;
             justify-content: center;
             color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .file-meta {
+            flex: 1;
+            min-width: 0;
         }
 
         .file-details h4 {
             font-weight: 600;
             margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .file-details span {
-            font-size: 0.75rem;
+        .file-details span { font-size: 0.75rem; color: var(--fg-muted); }
+
+        .unload-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
             color: var(--fg-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .unload-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
         }
 
         .section-title {
@@ -212,19 +198,9 @@
             gap: 8px;
         }
 
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        .groupings-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+        .groupings-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 
         .grouping-item {
             background: var(--bg-elevated);
@@ -234,16 +210,7 @@
             animation: slideIn 0.3s ease;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         .grouping-header {
             display: flex;
@@ -253,11 +220,7 @@
             background: var(--bg-card);
         }
 
-        .grouping-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .grouping-label { display: flex; align-items: center; gap: 10px; }
 
         .grouping-type {
             font-size: 0.65rem;
@@ -268,20 +231,9 @@
             font-weight: 600;
         }
 
-        .grouping-type.numeric {
-            background: rgba(255, 165, 2, 0.2);
-            color: var(--warning);
-        }
-
-        .grouping-type.factor {
-            background: var(--accent-dim);
-            color: var(--accent);
-        }
-
-        .grouping-column {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+        .grouping-type.numeric { background: rgba(255, 165, 2, 0.2); color: var(--warning); }
+        .grouping-type.factor { background: var(--accent-dim); color: var(--accent); }
+        .grouping-column { font-weight: 500; font-size: 0.9rem; }
 
         .delete-btn {
             width: 28px;
@@ -297,10 +249,7 @@
             transition: all 0.2s ease;
         }
 
-        .delete-btn:hover {
-            background: rgba(255, 71, 87, 0.2);
-            color: var(--danger);
-        }
+        .delete-btn:hover { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
 
         .add-grouping-btn {
             width: 100%;
@@ -326,10 +275,7 @@
             background: var(--accent-dim);
         }
 
-        .add-grouping-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .add-grouping-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .column-selector {
             position: fixed;
@@ -346,38 +292,12 @@
             animation: modalIn 0.2s ease;
         }
 
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
+        @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 1999;
-            backdrop-filter: blur(4px);
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1999; backdrop-filter: blur(4px); }
+        .modal-title { font-weight: 700; margin-bottom: 16px; font-size: 1.1rem; }
 
-        .modal-title {
-            font-weight: 700;
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-        }
-
-        .column-options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
+        .column-options { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
 
         .column-option {
             padding: 12px 14px;
@@ -391,27 +311,10 @@
             transition: all 0.2s ease;
         }
 
-        .column-option:hover {
-            border-color: var(--accent);
-            background: var(--bg-card);
-        }
-
-        .column-option.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .column-name {
-            font-weight: 500;
-        }
-
-        .column-type {
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: var(--border);
-            color: var(--fg-muted);
-        }
+        .column-option:hover { border-color: var(--accent); background: var(--bg-card); }
+        .column-option.disabled { opacity: 0.4; cursor: not-allowed; }
+        .column-name { font-weight: 500; }
+        .column-type { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: var(--border); color: var(--fg-muted); }
 
         .tooltip {
             position: fixed;
@@ -426,33 +329,11 @@
             animation: tooltipIn 0.15s ease;
         }
 
-        @keyframes tooltipIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes tooltipIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tooltip-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 24px;
-            padding: 4px 0;
-            font-size: 0.85rem;
-        }
-
-        .tooltip-key {
-            color: var(--fg-muted);
-        }
-
-        .tooltip-value {
-            font-weight: 500;
-            text-align: right;
-        }
+        .tooltip-row { display: flex; justify-content: space-between; gap: 24px; padding: 4px 0; font-size: 0.85rem; }
+        .tooltip-key { color: var(--fg-muted); }
+        .tooltip-value { font-weight: 500; text-align: right; }
 
         .legend {
             position: fixed;
@@ -466,77 +347,24 @@
             min-width: 180px;
         }
 
-        .legend-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--fg-muted);
-            margin-bottom: 12px;
-        }
+        .legend-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-muted); margin-bottom: 12px; }
+        .legend-items { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+        .legend-marker { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
-        .legend-items {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .size-scale { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+        .size-circle { border-radius: 50%; background: rgba(255, 255, 255, 0.9); }
+        .size-label { font-size: 0.75rem; color: var(--fg-muted); }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-        }
-
-        .legend-marker {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .size-scale {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 0;
-        }
-
-        .size-circle {
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .size-label {
-            font-size: 0.75rem;
-            color: var(--fg-muted);
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         @media (max-width: 768px) {
-            .control-panel {
-                width: calc(100% - 40px);
-                max-height: 50vh;
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .legend {
-                bottom: auto;
-                top: 20px;
-                left: 20px;
-                right: auto;
-            }
+            .control-panel { width: calc(100% - 40px); max-height: 50vh; top: auto; bottom: 20px; right: 20px; }
+            .legend { bottom: auto; top: 20px; left: 20px; right: auto; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
     </style>
 </head>
@@ -546,7 +374,7 @@
     <div class="control-panel">
         <div class="panel-header">
             <div class="panel-title">geovue</div>
-            <div class="panel-subtitle">Visualize your geospatial data</div>
+            <div class="panel-subtitle">Visualize your spatial data</div>
         </div>
         <div class="panel-content">
             <div id="fileSection">
@@ -569,10 +397,17 @@
                                 <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
                             </svg>
                         </div>
-                        <div class="file-details">
-                            <h4 id="fileName">data.csv</h4>
-                            <span id="fileStats">0 rows loaded</span>
+                        <div class="file-meta">
+                            <div class="file-details">
+                                <h4 id="fileName">data.csv</h4>
+                                <span id="fileStats">0 rows loaded</span>
+                            </div>
                         </div>
+                        <button class="unload-btn" id="unloadBtn" aria-label="Unload data">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -624,15 +459,12 @@
         let groupings = []; 
         let markersLayer = null;
 
-        // Colors for factors
+        // Colors & Shapes config
         const factorColors = [
             '#00d4aa', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3',
             '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a8b',
             '#88d8b0', '#ffcc5c', '#ff6f69', '#96ceb4', '#ffeead'
         ];
-
-        // Shapes for factors (Updated Order)
-        // 1. Circle, 2. Star, 3. Square, 4. Triangle, 5. Diamond, 6. Hexagon
         const shapes = ['circle', 'star', 'square', 'triangle', 'diamond', 'hexagon'];
 
         // DOM elements
@@ -650,8 +482,10 @@
         const tooltip = document.getElementById('tooltip');
         const legend = document.getElementById('legend');
         const legendItems = document.getElementById('legendItems');
+        const unloadBtn = document.getElementById('unloadBtn');
 
-        // Parse CSV
+        // --- Core Logic ---
+
         function parseCSV(text) {
             const lines = text.trim().split('\n');
             if (lines.length < 2) return { headers: [], data: [] };
@@ -669,7 +503,6 @@
                     data.push(row);
                 }
             }
-
             return { headers, data };
         }
 
@@ -677,7 +510,6 @@
             const values = [];
             let current = '';
             let inQuotes = false;
-
             for (let char of line) {
                 if (char === '"') {
                     inQuotes = !inQuotes;
@@ -692,100 +524,105 @@
             return values;
         }
 
-        // Check if value is numeric
         function isNumeric(value) {
             if (value === null || value === undefined || value === '') return false;
             return !isNaN(parseFloat(value)) && isFinite(value);
         }
 
-        // Check if column is numeric
         function isColumnNumeric(data, column) {
             const numericCount = data.filter(row => isNumeric(row[column])).length;
             return numericCount > data.length * 0.5;
         }
 
-        // File handling
+        // --- Data Handling ---
+
+        function handleCSVText(text, name) {
+            const result = parseCSV(text);
+            columns = result.headers;
+            csvData = result.data;
+
+            if (!columns.includes('lat') || !columns.includes('lon')) {
+                alert('CSV must contain "lat" and "lon" columns');
+                return;
+            }
+
+            fileName.textContent = name;
+            fileStats.textContent = `${csvData.length} rows, ${columns.length} columns`;
+
+            fileSection.classList.add('hidden');
+            loadedSection.classList.remove('hidden');
+
+            renderGroupings();
+            renderMarkers();
+            updateLegend();
+        }
+
+        function clearData() {
+            csvData = [];
+            columns = [];
+            groupings = [];
+            
+            if (markersLayer) {
+                map.removeLayer(markersLayer);
+                markersLayer = null;
+            }
+
+            fileSection.classList.remove('hidden');
+            loadedSection.classList.add('hidden');
+            legend.classList.add('hidden');
+            
+            // Reset view
+            map.setView([20, 0], 2);
+        }
+
         function handleFile(file) {
             if (!file.name.endsWith('.csv')) {
                 alert('Please select a CSV file');
                 return;
             }
-
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const result = parseCSV(e.target.result);
-                columns = result.headers;
-                csvData = result.data;
-
-                if (!columns.includes('lat') || !columns.includes('lon')) {
-                    alert('CSV must contain "lat" and "lon" columns');
-                    return;
-                }
-
-                fileName.textContent = file.name;
-                fileStats.textContent = `${csvData.length} rows, ${columns.length} columns`;
-
-                fileSection.classList.add('hidden');
-                loadedSection.classList.remove('hidden');
-
-                groupings = [];
-                renderGroupings();
-                renderMarkers();
-                updateLegend();
-            };
+            reader.onload = (e) => handleCSVText(e.target.result, file.name);
             reader.readAsText(file);
         }
 
-        // Drag and drop
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+        // --- Event Listeners ---
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                handleFile(e.dataTransfer.files[0]);
-            }
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
         });
 
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleFile(e.target.files[0]);
-            }
+            if (e.target.files.length) handleFile(e.target.files[0]);
         });
 
-        // Helpers to determine roles
+        unloadBtn.addEventListener('click', clearData);
+
+        // --- Grouping Logic ---
+
         function getGroupingRoles() {
             const factorGroupings = groupings.filter(g => g.type === 'factor');
             const numericGroupings = groupings.filter(g => g.type === 'numeric');
-
             return {
-                colorGrouping: factorGroupings[0] || null, // 1st Factor -> Color
-                shapeGrouping: factorGroupings[1] || null, // 2nd Factor -> Shape
-                sizeGrouping: numericGroupings[0] || null  // 1st Numeric -> Size
+                colorGrouping: factorGroupings[0] || null,
+                shapeGrouping: factorGroupings[1] || null,
+                sizeGrouping: numericGroupings[0] || null
             };
         }
 
-        // Grouping management
         function renderGroupings() {
             groupingsList.innerHTML = '';
-            
             groupings.forEach((g, index) => {
                 const item = document.createElement('div');
                 item.className = 'grouping-item';
-                
-                // Determine role text based on type and order
                 let roleText = '';
                 if (g.type === 'numeric') {
                     roleText = 'Size';
                 } else {
-                    // Factor: check if it's the first or second factor
                     const factors = groupings.filter(grp => grp.type === 'factor');
                     const factorIndex = factors.findIndex(grp => grp.column === g.column);
                     roleText = factorIndex === 0 ? 'Color' : 'Shape';
@@ -806,27 +643,21 @@
                 `;
                 groupingsList.appendChild(item);
             });
-
             updateAddButton();
         }
 
         function updateAddButton() {
             const factorCount = groupings.filter(g => g.type === 'factor').length;
             const numericCount = groupings.filter(g => g.type === 'numeric').length;
-            
-            // Max 2 factors AND 1 numeric
             const maxReached = (factorCount >= 2 && numericCount >= 1);
             addGroupingBtn.disabled = maxReached || !csvData.length;
         }
 
-        addGroupingBtn.addEventListener('click', () => {
-            showColumnSelector();
-        });
+        addGroupingBtn.addEventListener('click', showColumnSelector);
 
         function showColumnSelector() {
             const nonCoordCols = columns.filter(c => c !== 'lat' && c !== 'lon');
             const usedCols = groupings.map(g => g.column);
-            
             const factorCount = groupings.filter(g => g.type === 'factor').length;
             const numericCount = groupings.filter(g => g.type === 'numeric').length;
 
@@ -835,15 +666,10 @@
             nonCoordCols.forEach(col => {
                 const isUsed = usedCols.includes(col);
                 const isNum = isColumnNumeric(csvData, col);
-                
-                // Disable checks
-                // 1. If already used
-                // 2. If factor and we already have 2 factors
-                // 3. If numeric and we already have 1 numeric
                 let disabled = isUsed;
                 
-                if (!isNum && factorCount >= 2) disabled = true; // Max factors reached
-                if (isNum && numericCount >= 1) disabled = true; // Max numerics reached
+                if (!isNum && factorCount >= 2) disabled = true;
+                if (isNum && numericCount >= 1) disabled = true;
 
                 const option = document.createElement('div');
                 option.className = `column-option ${disabled ? 'disabled' : ''}`;
@@ -858,7 +684,6 @@
                         hideColumnSelector();
                     });
                 }
-
                 columnOptions.appendChild(option);
             });
 
@@ -891,40 +716,31 @@
             }
         });
 
-        // Marker rendering
-        function renderMarkers() {
-            if (markersLayer) {
-                map.removeLayer(markersLayer);
-            }
+        // --- Rendering ---
 
+        function renderMarkers() {
+            if (markersLayer) map.removeLayer(markersLayer);
             if (!csvData.length) return;
 
             const roles = getGroupingRoles();
-            
-            // Prepare Maps
             const colorMap = new Map();
             const shapeMap = new Map();
             let sizeRange = { min: Infinity, max: -Infinity };
 
-            // Map Colors (1st Factor)
             if (roles.colorGrouping) {
                 const col = roles.colorGrouping.column;
-                const uniqueVals = [...new Set(csvData.map(row => row[col]))];
-                uniqueVals.forEach((val, idx) => {
+                [...new Set(csvData.map(row => row[col]))].forEach((val, idx) => {
                     colorMap.set(val, factorColors[idx % factorColors.length]);
                 });
             }
 
-            // Map Shapes (2nd Factor)
             if (roles.shapeGrouping) {
                 const col = roles.shapeGrouping.column;
-                const uniqueVals = [...new Set(csvData.map(row => row[col]))];
-                uniqueVals.forEach((val, idx) => {
+                [...new Set(csvData.map(row => row[col]))].forEach((val, idx) => {
                     shapeMap.set(val, shapes[idx % shapes.length]);
                 });
             }
 
-            // Calc Size Range (Numeric)
             if (roles.sizeGrouping) {
                 const col = roles.sizeGrouping.column;
                 csvData.forEach(row => {
@@ -941,27 +757,22 @@
             csvData.forEach((row) => {
                 const lat = parseFloat(row.lat);
                 const lon = parseFloat(row.lon);
-                
                 if (isNaN(lat) || isNaN(lon)) return;
 
-                // Defaults
                 let color = 'rgba(255, 255, 255, 0.9)';
                 let shape = 'circle';
                 let size = 10;
 
-                // Apply Color
                 if (roles.colorGrouping) {
                     const val = row[roles.colorGrouping.column];
                     if (colorMap.has(val)) color = colorMap.get(val);
                 }
 
-                // Apply Shape
                 if (roles.shapeGrouping) {
                     const val = row[roles.shapeGrouping.column];
                     if (shapeMap.has(val)) shape = shapeMap.get(val);
                 }
 
-                // Apply Size
                 if (roles.sizeGrouping) {
                     const val = parseFloat(row[roles.sizeGrouping.column]);
                     if (!isNaN(val) && sizeRange.max > sizeRange.min) {
@@ -974,33 +785,26 @@
                 marker.addTo(markersLayer);
             });
 
-            // Fit bounds
             if (csvData.length > 0) {
                 const bounds = L.latLngBounds(csvData
                     .filter(row => !isNaN(parseFloat(row.lat)) && !isNaN(parseFloat(row.lon)))
                     .map(row => [parseFloat(row.lat), parseFloat(row.lon)])
                 );
-                if (bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
-                }
+                if (bounds.isValid()) map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
             }
         }
 
         function createMarker(lat, lon, color, shape, size, data) {
             size = Math.max(4, Math.min(30, size));
-            
             const icon = L.divIcon({
                 className: 'custom-marker',
                 html: createMarkerSVG(color, shape, size),
                 iconSize: [size * 2, size * 2],
                 iconAnchor: [size, size]
             });
-
             const marker = L.marker([lat, lon], { icon });
-
             marker.on('mouseover', (e) => showTooltip(e, data));
             marker.on('mouseout', hideTooltip);
-
             return marker;
         }
 
@@ -1011,160 +815,95 @@
 
             switch (shape) {
                 case 'circle':
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
-                    </svg>`;
-                case 'star': // 5-point star
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/></svg>`;
+                case 'star':
                     const points = [];
                     for (let i = 0; i < 10; i++) {
                         const radius = i % 2 === 0 ? r : r * 0.5;
                         const angle = (i * 36 - 90) * Math.PI / 180;
                         points.push(`${c + radius * Math.cos(angle)},${c + radius * Math.sin(angle)}`);
                     }
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <polygon points="${points.join(' ')}" fill="${color}" stroke="${color}" stroke-width="1" opacity="0.9"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><polygon points="${points.join(' ')}" fill="${color}" stroke="${color}" stroke-width="1" opacity="0.9"/></svg>`;
                 case 'square':
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9" transform="rotate(45 ${c} ${c})"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9" transform="rotate(45 ${c} ${c})"/></svg>`;
                 case 'triangle':
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <polygon points="${c},${c-r} ${c+r},${c+r} ${c-r},${c+r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><polygon points="${c},${c-r} ${c+r},${c+r} ${c-r},${c+r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/></svg>`;
                 case 'diamond':
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><rect x="${c-r}" y="${c-r}" width="${r*2}" height="${r*2}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/></svg>`;
                 case 'hexagon':
                     const hexPoints = [];
                     for (let i = 0; i < 6; i++) {
                         const angle = (i * 60 - 30) * Math.PI / 180;
                         hexPoints.push(`${c + r * Math.cos(angle)},${c + r * Math.sin(angle)}`);
                     }
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <polygon points="${hexPoints.join(' ')}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><polygon points="${hexPoints.join(' ')}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/></svg>`;
                 default:
-                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
-                        <circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/>
-                    </svg>`;
+                    return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><circle cx="${c}" cy="${c}" r="${r}" fill="${color}" stroke="${color}" stroke-width="2" opacity="0.9"/></svg>`;
             }
         }
 
-        // Tooltip
+        // --- Tooltip & Legend ---
+
         function showTooltip(e, data) {
             let html = '';
             Object.entries(data).forEach(([key, value]) => {
-                html += `
-                    <div class="tooltip-row">
-                        <span class="tooltip-key mono">${key}</span>
-                        <span class="tooltip-value">${value}</span>
-                    </div>
-                `;
+                html += `<div class="tooltip-row"><span class="tooltip-key mono">${key}</span><span class="tooltip-value">${value}</span></div>`;
             });
-            
             tooltip.innerHTML = html;
             tooltip.classList.remove('hidden');
 
             const point = e.containerPoint;
             const mapContainer = document.getElementById('map');
             const rect = mapContainer.getBoundingClientRect();
-
             let left = rect.left + point.x + 15;
             let top = rect.top + point.y - 10;
 
             const tooltipRect = tooltip.getBoundingClientRect();
-            if (left + tooltipRect.width > window.innerWidth - 20) {
-                left = rect.left + point.x - tooltipRect.width - 15;
-            }
-            if (top + tooltipRect.height > window.innerHeight - 20) {
-                top = window.innerHeight - tooltipRect.height - 20;
-            }
+            if (left + tooltipRect.width > window.innerWidth - 20) left = rect.left + point.x - tooltipRect.width - 15;
+            if (top + tooltipRect.height > window.innerHeight - 20) top = window.innerHeight - tooltipRect.height - 20;
 
             tooltip.style.left = left + 'px';
             tooltip.style.top = top + 'px';
         }
 
-        function hideTooltip() {
-            tooltip.classList.add('hidden');
-        }
+        function hideTooltip() { tooltip.classList.add('hidden'); }
 
-        // Legend
         function updateLegend() {
-            if (!csvData.length || !groupings.length) {
-                legend.classList.add('hidden');
-                return;
-            }
-
+            if (!csvData.length || !groupings.length) { legend.classList.add('hidden'); return; }
             legend.classList.remove('hidden');
             let html = '';
-            
             const roles = getGroupingRoles();
 
-            // Color Legend
             if (roles.colorGrouping) {
                 const g = roles.colorGrouping;
                 html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
-                
                 const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
                 uniqueVals.slice(0, 8).forEach((val, idx) => {
                     const color = factorColors[idx % factorColors.length];
-                    html += `
-                        <div class="legend-item">
-                            <div class="legend-marker" style="background:${color}; width:12px; height:12px; border-radius:50%;"></div>
-                            <span>${val}</span>
-                        </div>
-                    `;
+                    html += `<div class="legend-item"><div class="legend-marker" style="background:${color}; width:12px; height:12px; border-radius:50%;"></div><span>${val}</span></div>`;
                 });
-                if (uniqueVals.length > 8) {
-                    html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 8} more</div>`;
-                }
+                if (uniqueVals.length > 8) html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 8} more</div>`;
             }
 
-            // Shape Legend
             if (roles.shapeGrouping) {
                 const g = roles.shapeGrouping;
                 html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
-                
                 const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
                 uniqueVals.slice(0, 6).forEach((val, idx) => {
                     const shape = shapes[idx % shapes.length];
-                    // White shapes
                     const svgStr = createMarkerSVG('rgba(255,255,255,0.9)', shape, 8);
-                    html += `
-                        <div class="legend-item">
-                            <div style="width:16px; height:16px; display:flex; align-items:center; justify-content:center;">
-                                ${svgStr}
-                            </div>
-                            <span>${val}</span>
-                        </div>
-                    `;
+                    html += `<div class="legend-item"><div style="width:16px; height:16px; display:flex; align-items:center; justify-content:center;">${svgStr}</div><span>${val}</span></div>`;
                 });
-                // Added "+ X more" for shapes
-                if (uniqueVals.length > 6) {
-                    html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 6} more</div>`;
-                }
+                if (uniqueVals.length > 6) html += `<div style="font-size:0.75rem;color:var(--fg-muted);margin-top:4px;">+${uniqueVals.length - 6} more</div>`;
             }
 
-            // Size Legend
             if (roles.sizeGrouping) {
                 const g = roles.sizeGrouping;
                 const min = sizeRangeForColumn(g.column).min;
                 const max = sizeRangeForColumn(g.column).max;
-                
                 html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
-                html += `
-                    <div class="size-scale">
-                        <div class="size-circle" style="width:8px;height:8px;"></div>
-                        <span class="size-label">${min.toFixed(1)}</span>
-                        <div style="flex:1;height:1px;background:var(--border);"></div>
-                        <span class="size-label">${max.toFixed(1)}</span>
-                        <div class="size-circle" style="width:20px;height:20px;"></div>
-                    </div>
-                `;
+                html += `<div class="size-scale"><div class="size-circle" style="width:8px;height:8px;"></div><span class="size-label">${min.toFixed(1)}</span><div style="flex:1;height:1px;background:var(--border);"></div><span class="size-label">${max.toFixed(1)}</span><div class="size-circle" style="width:20px;height:20px;"></div></div>`;
             }
-
             legendItems.innerHTML = html;
         }
 
@@ -1172,13 +911,33 @@
             let min = Infinity, max = -Infinity;
             csvData.forEach(row => {
                 const val = parseFloat(row[column]);
-                if (!isNaN(val)) {
-                    min = Math.min(min, val);
-                    max = Math.max(max, val);
-                }
+                if (!isNaN(val)) { min = Math.min(min, val); max = Math.max(max, val); }
             });
             return { min: min === Infinity ? 0 : min, max: max === -Infinity ? 1 : max };
         }
+
+        // --- Auto-load Logic ---
+        (function init() {
+            fetch('sample.csv')
+                .then(res => {
+                    if (!res.ok) throw new Error("No sample file");
+                    return res.text();
+                })
+                .then(text => {
+                    handleCSVText(text, 'sample.csv');
+                    // Apply default groupings: category (Color), population (Size)
+                    // Use timeout to ensure UI is ready
+                    setTimeout(() => {
+                        if (columns.includes('category')) {
+                             addGrouping('category', 'factor');
+                        }
+                        if (columns.includes('population')) {
+                            addGrouping('population', 'numeric');
+                        }
+                    }, 100);
+                })
+                .catch(e => console.log("Sample CSV not loaded (this is normal for local file usage)."));
+        })();
     </script>
 </body>
 </html>

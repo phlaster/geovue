@@ -1,4 +1,11 @@
 id,lat,lon,city,population,category
 1,48.8566,2.3522,Paris,2161000,Capital
 2,51.5074,-0.1278,London,8982000,Capital
-3,45.4642,9.1900,Milan,1352000,Metropolis
+3,40.4168,-3.7038,Madrid,3223000,Capital
+4,52.5200,13.4050,Berlin,3645000,Capital
+5,45.4642,9.1900,Milan,1352000,Metropolis
+6,41.9028,12.4964,Rome,2873000,Capital
+7,40.8518,14.2681,Naples,959000,Metropolis
+8,41.3851,2.1734,Barcelona,1620000,Metropolis
+9,45.0703,7.6869,Turin,848000,Metropolis
+10,45.4384,10.9916,Verona,257000,Town
