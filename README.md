@@ -50,7 +50,7 @@ You can add up to **3 groupings** total to visualize different dimensions of you
 
 ## How to Use
 
-1.  Open `geovue.html` in a modern web browser.
+1.  Open `index.html` in a modern web browser.
 2.  Drag and drop a `.csv` file onto the upload zone (or click to browse).
 3.  Once loaded, click **"Add grouping"**.
 4.  Select a column from the list. The system will automatically determine if it is Numeric (Size) or Factor (Color/Shape).
