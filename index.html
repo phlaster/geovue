@@ -37,6 +37,15 @@
 
         .leaflet-container { background: var(--bg) !important; }
         .leaflet-tile-pane { filter: brightness(0.7) saturate(0.8) hue-rotate(180deg) invert(1); }
+
+        .leaflet-control-zoom {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            top: auto;
+            left: auto;
+        }
+
         .leaflet-control-zoom a {
             background: var(--bg-card) !important;
             color: var(--fg) !important;
@@ -47,12 +56,94 @@
             color: var(--accent) !important;
         }
 
-        .control-panel {
+        /* Welcome Modal */
+        .welcome-overlay {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 340px;
-            max-height: calc(100vh - 40px);
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .welcome-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            animation: welcomeIn 0.4s ease;
+        }
+
+        @keyframes welcomeIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--fg), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            color: var(--fg-muted);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .welcome-info {
+            background: var(--bg-elevated);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 32px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .welcome-info strong { color: var(--accent); }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--fg);
+        }
+        .btn-secondary:hover { border-color: var(--fg-muted); background: var(--bg-elevated); }
+
+        /* Panels Common Styles */
+        .panel-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
@@ -61,34 +152,93 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
+            transition: max-height 0.3s ease, border-radius 0.3s ease;
         }
 
         .panel-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
             background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: default;
         }
 
-        .panel-title {
-            font-size: 1.25rem;
+        .panel-container.minimized .panel-header {
+            border-bottom: none;
+        }
+        .panel-container.minimized .panel-content {
+            display: none;
+        }
+
+        .header-text h3 {
+            font-size: 1rem; /* Adjusted for legend */
             font-weight: 700;
             letter-spacing: -0.02em;
-            margin-bottom: 4px;
         }
 
-        .panel-subtitle {
-            font-size: 0.75rem;
+        .header-text .subtitle {
+            font-size: 0.7rem;
             color: var(--fg-muted);
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
 
+        .toggle-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--fg-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .panel-container.minimized .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Specific Panel Positioning */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            min-width: 180px;
+            width: auto;
+        }
+
         .panel-content {
             padding: 20px 24px;
             overflow-y: auto;
-            flex: 1;
+            max-height: calc(100vh - 100px);
         }
 
+        .legend .panel-content {
+            padding: 16px 20px;
+            width: 220px;
+        }
+
+        /* Form Elements */
         .file-upload {
             border: 2px dashed var(--border);
             border-radius: 12px;
@@ -114,244 +264,68 @@
         .file-upload:hover, .file-upload.dragover { border-color: var(--accent); }
         .file-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
-        .upload-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 16px;
-            color: var(--fg-muted);
-            transition: color 0.3s ease;
-        }
-
+        .upload-icon { width: 48px; height: 48px; margin: 0 auto 16px; color: var(--fg-muted); transition: color 0.3s ease; }
         .file-upload:hover .upload-icon { color: var(--accent); }
         .upload-text { font-weight: 500; margin-bottom: 4px; }
         .upload-hint { font-size: 0.75rem; color: var(--fg-muted); }
 
-        .file-loaded {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .file-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--accent-dim);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-
-        .file-meta {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .file-details h4 {
-            font-weight: 600;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
+        .file-loaded { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        .file-info { display: flex; align-items: center; gap: 12px; }
+        .file-icon { width: 40px; height: 40px; background: var(--accent-dim); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0; }
+        .file-meta { flex: 1; min-width: 0; }
+        .file-details h4 { font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .file-details span { font-size: 0.75rem; color: var(--fg-muted); }
 
-        .unload-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: transparent;
-            color: var(--fg-muted);
-            cursor: pointer;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
+        .unload-btn { width: 32px; height: 32px; border: none; background: transparent; color: var(--fg-muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
+        .unload-btn:hover { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
 
-        .unload-btn:hover {
-            background: rgba(255, 71, 87, 0.2);
-            color: var(--danger);
-        }
-
-        .section-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--fg-muted);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--fg-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
         .groupings-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 
-        .grouping-item {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            animation: slideIn 0.3s ease;
-        }
-
+        .grouping-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .grouping-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px;
-            background: var(--bg-card);
-        }
-
+        .grouping-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-card); }
         .grouping-label { display: flex; align-items: center; gap: 10px; }
 
-        .grouping-type {
-            font-size: 0.65rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
+        .grouping-type { font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
         .grouping-type.numeric { background: rgba(255, 165, 2, 0.2); color: var(--warning); }
         .grouping-type.factor { background: var(--accent-dim); color: var(--accent); }
         .grouping-column { font-weight: 500; font-size: 0.9rem; }
 
-        .delete-btn {
-            width: 28px;
-            height: 28px;
-            border: none;
-            background: transparent;
-            color: var(--fg-muted);
-            cursor: pointer;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
+        .delete-btn { width: 28px; height: 28px; border: none; background: transparent; color: var(--fg-muted); cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
         .delete-btn:hover { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
 
-        .add-grouping-btn {
-            width: 100%;
-            padding: 12px;
-            border: 1px dashed var(--border);
-            background: transparent;
-            color: var(--fg-muted);
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .add-grouping-btn:hover:not(:disabled) {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-dim);
-        }
-
+        .add-grouping-btn { width: 100%; padding: 12px; border: 1px dashed var(--border); background: transparent; color: var(--fg-muted); border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; }
+        .add-grouping-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
         .add-grouping-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .column-selector {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            z-index: 2000;
-            min-width: 300px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-            animation: modalIn 0.2s ease;
-        }
-
-        @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-
+        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1999; backdrop-filter: blur(4px); }
+        .column-selector { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; z-index: 2000; min-width: 300px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
         .modal-title { font-weight: 700; margin-bottom: 16px; font-size: 1.1rem; }
 
         .column-options { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
-
-        .column-option {
-            padding: 12px 14px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-
+        .column-option { padding: 12px 14px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s ease; }
         .column-option:hover { border-color: var(--accent); background: var(--bg-card); }
         .column-option.disabled { opacity: 0.4; cursor: not-allowed; }
         .column-name { font-weight: 500; }
         .column-type { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: var(--border); color: var(--fg-muted); }
 
-        .tooltip {
-            position: fixed;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 18px;
-            z-index: 3000;
-            pointer-events: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            max-width: 280px;
-            animation: tooltipIn 0.15s ease;
-        }
-
+        /* Tooltip */
+        .tooltip { position: fixed; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; z-index: 3000; pointer-events: none; box-shadow: 0 10px 40px rgba(0,0,0,0.4); max-width: 280px; animation: tooltipIn 0.15s ease; }
         @keyframes tooltipIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         .tooltip-row { display: flex; justify-content: space-between; gap: 24px; padding: 4px 0; font-size: 0.85rem; }
         .tooltip-key { color: var(--fg-muted); }
         .tooltip-value { font-weight: 500; text-align: right; }
 
-        .legend {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 20px;
-            z-index: 1000;
-            min-width: 180px;
-        }
-
-        .legend-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-muted); margin-bottom: 12px; }
+        /* Legend Items */
         .legend-items { display: flex; flex-direction: column; gap: 8px; }
         .legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
         .legend-marker { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-
         .size-scale { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
         .size-circle { border-radius: 50%; background: rgba(255, 255, 255, 0.9); }
         .size-label { font-size: 0.75rem; color: var(--fg-muted); }
@@ -361,6 +335,7 @@
         @media (max-width: 768px) {
             .control-panel { width: calc(100% - 40px); max-height: 50vh; top: auto; bottom: 20px; right: 20px; }
             .legend { bottom: auto; top: 20px; left: 20px; right: auto; }
+            .leaflet-control-zoom { bottom: 70vh; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -371,20 +346,50 @@
 <body>
     <div id="map"></div>
 
-    <div class="control-panel">
+    <!-- Welcome Screen -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-box">
+            <h1 class="welcome-title">geovue</h1>
+            <div class="welcome-subtitle">
+                An interactive tool to visualize your spatial data.<br>
+                <a href="https://github.com/phlaster/geovue" target="_blank" style="color:var(--accent); text-decoration:none;">View on GitHub</a>
+            </div>
+
+            <div class="welcome-info">
+                <strong>Format Requirements:</strong><br>
+                Accepts <code>.csv</code> (comma-separated) and <code>.tsv</code> (tab-separated) files.<br>
+                Must contain column headers in the first row.<br>
+                Mandatory columns: <strong style="color:var(--accent)">lat</strong> and <strong style="color:var(--accent)">lon</strong>.
+            </div>
+
+            <div class="btn-row" id="welcomeButtons">
+                <!-- Buttons injected via JS based on sample availability -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="panel-container control-panel hidden" id="controlPanel">
         <div class="panel-header">
-            <div class="panel-title">geovue</div>
-            <div class="panel-subtitle">Visualize your spatial data</div>
+            <div class="header-text">
+                <div class="panel-title" style="font-size:1.25rem;">geovue</div>
+                <div class="subtitle">Visualize your spatial data</div>
+            </div>
+            <button class="toggle-btn hidden" id="toggleControlBtn" aria-label="Toggle panel">
+                <svg class="toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
+                </svg>
+            </button>
         </div>
         <div class="panel-content">
             <div id="fileSection">
                 <div class="file-upload" id="dropZone">
-                    <input type="file" accept=".csv" id="fileInput">
+                    <input type="file" accept=".csv,.tsv" id="fileInput">
                     <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                     </svg>
-                    <div class="upload-text">Drop CSV file here</div>
-                    <div class="upload-hint">or click to browse</div>
+                    <div class="upload-text">Drop file here</div>
+                    <div class="upload-hint">.csv or .tsv</div>
                 </div>
             </div>
 
@@ -423,29 +428,46 @@
         </div>
     </div>
 
-    <div class="legend hidden" id="legend">
-        <div class="legend-title">Legend</div>
-        <div class="legend-items" id="legendItems"></div>
+    <!-- Legend -->
+    <div class="panel-container legend hidden" id="legend">
+        <div class="panel-header">
+            <div class="header-text">
+                <h3>Legend</h3>
+            </div>
+            <button class="toggle-btn" id="toggleLegendBtn" aria-label="Toggle legend">
+                <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
+                </svg>
+            </button>
+        </div>
+        <div class="panel-content">
+            <div class="legend-items" id="legendItems"></div>
+        </div>
     </div>
 
+    <!-- Selection Modal -->
     <div class="modal-overlay hidden" id="modalOverlay"></div>
     <div class="column-selector hidden" id="columnSelector">
         <div class="modal-title">Select column</div>
         <div class="column-options" id="columnOptions"></div>
     </div>
 
+    <!-- Tooltip -->
     <div class="tooltip hidden" id="tooltip"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize map
+        // --- INIT MAP ---
         const map = L.map('map', {
             center: [20, 0],
             zoom: 2,
             minZoom: 2,
             maxZoom: 18,
-            worldCopyJump: true
+            worldCopyJump: true,
+            zoomControl: false
         });
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap, &copy; CARTO',
@@ -453,21 +475,25 @@
             maxZoom: 20
         }).addTo(map);
 
-        // State
+        // --- STATE ---
         let csvData = [];
         let columns = [];
-        let groupings = []; 
+        let groupings = [];
         let markersLayer = null;
+        let sampleAvailable = false;
 
-        // Colors & Shapes config
+        // Seaborn 'deep' palette
         const factorColors = [
-            '#00d4aa', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3',
-            '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a8b',
-            '#88d8b0', '#ffcc5c', '#ff6f69', '#96ceb4', '#ffeead'
+            '#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3',
+            '#937860', '#DA8BC3', '#8C8C8C', '#CCB974', '#64B5CD'
         ];
         const shapes = ['circle', 'star', 'square', 'triangle', 'diamond', 'hexagon'];
 
-        // DOM elements
+        // --- DOM REFS ---
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const welcomeButtons = document.getElementById('welcomeButtons');
+        const controlPanel = document.getElementById('controlPanel');
+        const legendEl = document.getElementById('legend');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const fileSection = document.getElementById('fileSection');
@@ -480,21 +506,132 @@
         const columnSelector = document.getElementById('columnSelector');
         const columnOptions = document.getElementById('columnOptions');
         const tooltip = document.getElementById('tooltip');
-        const legend = document.getElementById('legend');
         const legendItems = document.getElementById('legendItems');
         const unloadBtn = document.getElementById('unloadBtn');
+        const toggleControlBtn = document.getElementById('toggleControlBtn');
+        const toggleLegendBtn = document.getElementById('toggleLegendBtn');
 
-        // --- Core Logic ---
+        // --- WELCOME LOGIC ---
+        function initApp() {
+            fetch('Example.csv', { method: 'HEAD' })
+                .then(res => {
+                    if (res.ok) {
+                        sampleAvailable = true;
+                        renderWelcomeButtons(true);
+                    } else {
+                        throw new Error();
+                    }
+                })
+                .catch(() => {
+                    sampleAvailable = false;
+                    renderWelcomeButtons(false);
+                });
+        }
 
-        function parseCSV(text) {
+        function renderWelcomeButtons(hasSample) {
+            let html = '';
+            if (hasSample) {
+                html += `<button class="btn btn-secondary" id="btnStartFresh">Start Fresh</button>`;
+                html += `<button class="btn btn-primary" id="btnSeeExample">See Example</button>`;
+            } else {
+                html += `<button class="btn btn-primary" id="btnStartFresh">Let's go!</button>`;
+            }
+            welcomeButtons.innerHTML = html;
+
+            // Attach listeners
+            const btnFresh = document.getElementById('btnStartFresh');
+            if (btnFresh) {
+                btnFresh.addEventListener('click', () => {
+                    welcomeOverlay.classList.add('hidden');
+                    controlPanel.classList.remove('hidden');
+                });
+            }
+
+            const btnExample = document.getElementById('btnSeeExample');
+            if (btnExample) {
+                btnExample.addEventListener('click', () => {
+                    welcomeOverlay.classList.add('hidden');
+                    controlPanel.classList.remove('hidden');
+                    loadSampleData();
+                });
+            }
+        }
+
+        function loadSampleData() {
+            fetch('Example.csv')
+                .then(res => res.text())
+                .then(text => {
+                    processFileContent(text, 'Example.csv');
+                })
+                .catch(e => alert("Failed to load sample data."));
+        }
+
+        // --- PARSING & VALIDATION ---
+        function processFileContent(text, name) {
+            const ext = name.split('.').pop().toLowerCase();
+
+            try {
+                const result = parseText(text, ext);
+
+                // Validations
+                if (!result.headers || result.headers.length === 0) {
+                    throw new Error("File is empty or missing headers.");
+                }
+                if (!result.headers.includes('lat') || !result.headers.includes('lon')) {
+                    throw new Error("Missing mandatory columns: 'lat' and/or 'lon'.");
+                }
+                if (result.data.length === 0) {
+                    throw new Error("No data rows found.");
+                }
+
+                // Success
+                columns = result.headers;
+                csvData = result.data;
+
+                fileName.textContent = name;
+                fileStats.textContent = `${csvData.length} rows, ${columns.length} columns`;
+
+                fileSection.classList.add('hidden');
+                loadedSection.classList.remove('hidden');
+
+                toggleControlBtn.classList.remove('hidden');
+                controlPanel.classList.remove('minimized');
+                controlPanel.classList.remove('hidden');
+
+                renderGroupings();
+                renderMarkers();
+                updateLegend();
+
+            } catch (err) {
+                alert(`Error loading file: ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        function parseText(text, ext) {
             const lines = text.trim().split('\n');
-            if (lines.length < 2) return { headers: [], data: [] };
+            if (lines.length < 2) return { headers: [], data: [] }; // Handled by validation
 
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+            let delimiter = ',';
+            if (ext === 'tsv') delimiter = '\t';
+
+            // Sniff for tabs if extension is ambiguous or csv has tabs
+            if (ext === 'csv' && lines[0].includes('\t') && !lines[0].includes(',')) {
+                delimiter = '\t';
+            }
+
+            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, ''));
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
-                const values = parseCSVLine(lines[i]);
+                // Skip empty lines
+                if (!lines[i].trim()) continue;
+
+                const values = parseLine(lines[i], delimiter);
+
+                // Basic check for malformed rows (column count mismatch)
+                // We allow some flexibility, but strict checking might be better
+                // For now, we just map what we can
                 if (values.length === headers.length) {
                     const row = {};
                     headers.forEach((h, idx) => {
@@ -506,14 +643,14 @@
             return { headers, data };
         }
 
-        function parseCSVLine(line) {
+        function parseLine(line, delimiter) {
             const values = [];
             let current = '';
             let inQuotes = false;
             for (let char of line) {
                 if (char === '"') {
                     inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
+                } else if (char === delimiter && !inQuotes) {
                     values.push(current);
                     current = '';
                 } else {
@@ -524,44 +661,12 @@
             return values;
         }
 
-        function isNumeric(value) {
-            if (value === null || value === undefined || value === '') return false;
-            return !isNaN(parseFloat(value)) && isFinite(value);
-        }
-
-        function isColumnNumeric(data, column) {
-            const numericCount = data.filter(row => isNumeric(row[column])).length;
-            return numericCount > data.length * 0.5;
-        }
-
-        // --- Data Handling ---
-
-        function handleCSVText(text, name) {
-            const result = parseCSV(text);
-            columns = result.headers;
-            csvData = result.data;
-
-            if (!columns.includes('lat') || !columns.includes('lon')) {
-                alert('CSV must contain "lat" and "lon" columns');
-                return;
-            }
-
-            fileName.textContent = name;
-            fileStats.textContent = `${csvData.length} rows, ${columns.length} columns`;
-
-            fileSection.classList.add('hidden');
-            loadedSection.classList.remove('hidden');
-
-            renderGroupings();
-            renderMarkers();
-            updateLegend();
-        }
-
+        // --- DATA HANDLING ---
         function clearData() {
             csvData = [];
             columns = [];
             groupings = [];
-            
+
             if (markersLayer) {
                 map.removeLayer(markersLayer);
                 markersLayer = null;
@@ -569,25 +674,27 @@
 
             fileSection.classList.remove('hidden');
             loadedSection.classList.add('hidden');
-            legend.classList.add('hidden');
-            
-            // Reset view
+            legendEl.classList.add('hidden');
+
+            toggleControlBtn.classList.add('hidden');
             map.setView([20, 0], 2);
         }
 
         function handleFile(file) {
-            if (!file.name.endsWith('.csv')) {
-                alert('Please select a CSV file');
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['csv', 'tsv'].includes(ext)) {
+                alert("Please select a .csv or .tsv file");
                 return;
             }
             const reader = new FileReader();
-            reader.onload = (e) => handleCSVText(e.target.result, file.name);
+            reader.onload = (e) => processFileContent(e.target.result, file.name);
             reader.readAsText(file);
         }
 
-        // --- Event Listeners ---
+        // --- EVENTS ---
+        toggleControlBtn.addEventListener('click', () => controlPanel.classList.toggle('minimized'));
+        toggleLegendBtn.addEventListener('click', () => legendEl.classList.toggle('minimized'));
 
-        // Drag & Drop
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
         dropZone.addEventListener('drop', (e) => {
@@ -602,8 +709,7 @@
 
         unloadBtn.addEventListener('click', clearData);
 
-        // --- Grouping Logic ---
-
+        // --- GROUPING LOGIC ---
         function getGroupingRoles() {
             const factorGroupings = groupings.filter(g => g.type === 'factor');
             const numericGroupings = groupings.filter(g => g.type === 'numeric');
@@ -627,7 +733,7 @@
                     const factorIndex = factors.findIndex(grp => grp.column === g.column);
                     roleText = factorIndex === 0 ? 'Color' : 'Shape';
                 }
-                
+
                 item.innerHTML = `
                     <div class="grouping-header">
                         <div class="grouping-label">
@@ -662,12 +768,12 @@
             const numericCount = groupings.filter(g => g.type === 'numeric').length;
 
             columnOptions.innerHTML = '';
-            
+
             nonCoordCols.forEach(col => {
                 const isUsed = usedCols.includes(col);
                 const isNum = isColumnNumeric(csvData, col);
                 let disabled = isUsed;
-                
+
                 if (!isNum && factorCount >= 2) disabled = true;
                 if (isNum && numericCount >= 1) disabled = true;
 
@@ -716,7 +822,16 @@
             }
         });
 
-        // --- Rendering ---
+        // --- RENDERING ---
+        function isNumeric(value) {
+            if (value === null || value === undefined || value === '') return false;
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        function isColumnNumeric(data, column) {
+            const numericCount = data.filter(row => isNumeric(row[column])).length;
+            return numericCount > data.length * 0.5;
+        }
 
         function renderMarkers() {
             if (markersLayer) map.removeLayer(markersLayer);
@@ -842,8 +957,7 @@
             }
         }
 
-        // --- Tooltip & Legend ---
-
+        // --- TOOLTIP & LEGEND ---
         function showTooltip(e, data) {
             let html = '';
             Object.entries(data).forEach(([key, value]) => {
@@ -869,14 +983,14 @@
         function hideTooltip() { tooltip.classList.add('hidden'); }
 
         function updateLegend() {
-            if (!csvData.length || !groupings.length) { legend.classList.add('hidden'); return; }
-            legend.classList.remove('hidden');
+            if (!csvData.length || !groupings.length) { legendEl.classList.add('hidden'); return; }
+            legendEl.classList.remove('hidden');
             let html = '';
             const roles = getGroupingRoles();
 
             if (roles.colorGrouping) {
                 const g = roles.colorGrouping;
-                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
                 const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
                 uniqueVals.slice(0, 8).forEach((val, idx) => {
                     const color = factorColors[idx % factorColors.length];
@@ -887,7 +1001,7 @@
 
             if (roles.shapeGrouping) {
                 const g = roles.shapeGrouping;
-                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
                 const uniqueVals = [...new Set(csvData.map(row => row[g.column]))];
                 uniqueVals.slice(0, 6).forEach((val, idx) => {
                     const shape = shapes[idx % shapes.length];
@@ -901,7 +1015,7 @@
                 const g = roles.sizeGrouping;
                 const min = sizeRangeForColumn(g.column).min;
                 const max = sizeRangeForColumn(g.column).max;
-                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:12px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
+                html += `<div style="font-size:0.7rem;color:var(--fg-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;">${g.column}</div>`;
                 html += `<div class="size-scale"><div class="size-circle" style="width:8px;height:8px;"></div><span class="size-label">${min.toFixed(1)}</span><div style="flex:1;height:1px;background:var(--border);"></div><span class="size-label">${max.toFixed(1)}</span><div class="size-circle" style="width:20px;height:20px;"></div></div>`;
             }
             legendItems.innerHTML = html;
@@ -916,28 +1030,8 @@
             return { min: min === Infinity ? 0 : min, max: max === -Infinity ? 1 : max };
         }
 
-        // --- Auto-load Logic ---
-        (function init() {
-            fetch('sample.csv')
-                .then(res => {
-                    if (!res.ok) throw new Error("No sample file");
-                    return res.text();
-                })
-                .then(text => {
-                    handleCSVText(text, 'sample.csv');
-                    // Apply default groupings: category (Color), population (Size)
-                    // Use timeout to ensure UI is ready
-                    setTimeout(() => {
-                        if (columns.includes('category')) {
-                             addGrouping('category', 'factor');
-                        }
-                        if (columns.includes('population')) {
-                            addGrouping('population', 'numeric');
-                        }
-                    }, 100);
-                })
-                .catch(e => console.log("Sample CSV not loaded (this is normal for local file usage)."));
-        })();
+        // Start
+        initApp();
     </script>
 </body>
 </html>
